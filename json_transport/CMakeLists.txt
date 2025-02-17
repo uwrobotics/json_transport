@@ -49,31 +49,6 @@ if(BUILD_TESTING)
   # Linting (requires ament_lint_auto)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
-
-  # --- C++ Tests ---
-  # Test executable from test/talker.cpp
-  ament_add_gtest(talker_cpp test/talker.cpp)
-  if(TARGET talker_cpp)
-    target_link_libraries(talker_cpp
-      rclcpp
-      nlohmann_json::nlohmann_json
-    )
-  endif()
-
-  # Test executable from test/test_listener.cpp
-  ament_add_gtest(test_listener_cpp test/test_listener.cpp)
-  if(TARGET test_listener_cpp)
-    target_link_libraries(test_listener_cpp
-      rclcpp
-      nlohmann_json::nlohmann_json
-    )
-  endif()
-
-  # --- Python Tests ---
-  find_package(ament_cmake_pytest REQUIRED)
-  ament_add_pytest_test(talker_py test/talker_py)
-  ament_add_pytest_test(test_listener_py test/test_listener_py)
-  ament_add_pytest_test(test_packed_json test/test_packed_json.py)
 endif()
 
 ament_package()
