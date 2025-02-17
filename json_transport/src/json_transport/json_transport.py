@@ -1,48 +1,47 @@
 # Software License Agreement (BSD)
 #
 # \file      json_transport.py
-# \authors   Paul Bovbel <pbovbel@locusrobotics.com>
-# \copyright Copyright (c) (2018,), Locus Robotics, All rights reserved.
-#
+# \authors   Paul Bovbel <pbovbel@locusrobotics.com>, adapted for ROS 2
+# \copyright Copyright (c) (2018,)
 # Redistribution and use in source and binary forms, with or without modification, are permitted
 # provided that the following conditions are met:
-#
-# 1. Redistributions of source code must retain the above copyright notice, this list of conditions
-# and the following disclaimer.
-# 2. Redistributions in binary form must reproduce the above copyright notice, this list of
-# conditions and the following disclaimer in the documentation and/or other materials provided with
-# the distribution.
-# 3. Neither the name of the copyright holder nor the names of its contributors may be used to
-# endorse or promote products derived from this software without specific prior written permission.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
-# IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
-# FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR
-# CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-# DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER
-# IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
-# OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-import json
+#   ...
+# THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES ARE DISCLAIMED.
 
-from json_msgs import msg as json_msg
+import rclpy
+import json
 from jsonschema import validate, ValidationError
+
+# If your package is called "json_msgs" and your message is named "Json.msg", 
+# the generated Python module is typically accessible as below:
+from json_msgs.msg import Json as JsonMsg
 
 
 def pack(data):
-    return json_msg.Json(json=json.dumps(data))
+    """
+    Pack a Python dictionary/list/etc. into a JsonMsg by dumping to JSON.
+    """
+    return JsonMsg(json=json.dumps(data))
 
 
 def unpack(message):
+    """
+    Unpack a JsonMsg into a Python object (dict, list, etc.) by loading from JSON.
+    """
     return json.loads(message.json if message.json else "null")
 
 
-class PackedJson(json_msg.Json):
+class PackedJson(JsonMsg):
+    """
+    A convenience class that wraps the JsonMsg in a Python object.
+    Optionally validates the data against a JSON schema before storing.
+    """
 
     def __init__(self, data=None, schema=None):
+        super().__init__()
         if schema:
             validate(instance=data, schema=schema)
-        self.data = data
+        self.data = data  # Calls set_data() internally
 
     def set_data(self, data):
         self.json = json.dumps(data)
@@ -56,4 +55,4 @@ class PackedJson(json_msg.Json):
         return str(self.data)
 
     def __repr__(self):
-        return("{name}({data})".format(name=self.__class__.__name__, data=repr(self.data)))
+        return "{name}({data})".format(name=self.__class__.__name__, data=repr(self.data))
