@@ -29,7 +29,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef JSON_TRANSPORT_JSON_TRANSPORT_HPP
 #define JSON_TRANSPORT_JSON_TRANSPORT_HPP
 
-#include "json_msgs/msg/Json.h"
+#include "json_msgs/msg/json.hpp"
 
 #include <nlohmann/json.hpp>
 #include <ros/message_traits.h>
