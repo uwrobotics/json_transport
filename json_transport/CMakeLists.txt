@@ -14,12 +14,19 @@ find_package(rclcpp REQUIRED)
 find_package(json_msgs REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
-# Include directories for headers
-include_directories(
-  include
+# Create an INTERFACE library target for this header-only package.
+add_library(${PROJECT_NAME} INTERFACE)
+target_include_directories(${PROJECT_NAME} INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
 )
 
-# Install public header files (if any)
+# Export dependencies so that downstream packages linking to json_transport get these includes.
+ament_export_dependencies(rclcpp json_msgs nlohmann_json)
+ament_export_include_directories(include)
+ament_export_targets(${PROJECT_NAME}Targets)
+
+# Install public header files (the header files should be placed in include/json_transport/)
 install(DIRECTORY include/${PROJECT_NAME}/
   DESTINATION include/${PROJECT_NAME}
 )
