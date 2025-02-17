@@ -31,7 +31,7 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/string.hpp"
-#include "nlohmann/json.hpp"
+#include "nlohmann/include/nlohmann/json.hpp"
 
 namespace json_transport
 {
