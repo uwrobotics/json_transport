@@ -24,6 +24,15 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 # Export dependencies so that downstream packages linking to json_transport get these includes.
 ament_export_dependencies(rclcpp json_msgs nlohmann_json)
 ament_export_include_directories(include)
+
+# Install the INTERFACE target with an export name
+install(
+  TARGETS ${PROJECT_NAME}
+  EXPORT ${PROJECT_NAME}Targets
+  INCLUDES DESTINATION include
+)
+
+# Export the installed targets for downstream usage
 ament_export_targets(${PROJECT_NAME}Targets)
 
 # Install public header files (the header files should be placed in include/json_transport/)
@@ -61,8 +70,6 @@ if(BUILD_TESTING)
   endif()
 
   # --- Python Tests ---
-  # For Python tests, we assume they can be run with pytest.
-  # (Rename your Python test files with a .py extension if needed.)
   find_package(ament_cmake_pytest REQUIRED)
   ament_add_pytest_test(talker_py test/talker_py)
   ament_add_pytest_test(test_listener_py test/test_listener_py)
