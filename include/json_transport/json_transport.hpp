@@ -9,12 +9,12 @@ Redistribution and use in source and binary forms, with or without modification,
 provided that the following conditions are met:
 
 1. Redistributions of source code must retain the above copyright notice, this list of conditions
-and the following disclaimer.
+   and the following disclaimer.
 2. Redistributions in binary form must reproduce the above copyright notice, this list of
-conditions and the following disclaimer in the documentation and/or other materials provided with
-the distribution.
+   conditions and the following disclaimer in the documentation and/or other materials provided with
+   the distribution.
 3. Neither the name of the copyright holder nor the names of its contributors may be used to
-endorse or promote products derived from this software without specific prior written permission.
+   endorse or promote products derived from this software without specific prior written permission.
 
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR
 IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND
@@ -30,24 +30,25 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define JSON_TRANSPORT_JSON_TRANSPORT_HPP
 
 #include "rclcpp/rclcpp.hpp"
-#include "json_msgs/msg/json.hpp"
+#include "std_msgs/msg/string.hpp"
 #include "nlohmann/json.hpp"
-
 
 namespace json_transport
 {
   typedef nlohmann::json json_t;
-  typedef json_msgs::Json json_msg_t;
+  typedef std_msgs::msg::String json_msg_t;
 
   inline json_t unpack(json_msg_t message)
   {
-    return json_t::parse(message.json.empty() ? "null" : message.json);
+    // Use the 'data' field of std_msgs::msg::String.
+    return json_t::parse(message.data.empty() ? "null" : message.data);
   }
 
   inline json_msg_t pack(json_t data)
   {
     json_msg_t message{};
-    message.json = data.dump();
+    // Store the JSON string in the 'data' field.
+    message.data = data.dump();
     return message;
   }
 }

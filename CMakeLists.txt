@@ -11,7 +11,7 @@ add_compile_options(-Wall -Werror)
 # Find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(json_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
 # Create an INTERFACE library target for this header-only package.
@@ -22,7 +22,7 @@ target_include_directories(${PROJECT_NAME} INTERFACE
 )
 
 # Export dependencies so that downstream packages linking to json_transport get these includes.
-ament_export_dependencies(rclcpp json_msgs nlohmann_json)
+ament_export_dependencies(rclcpp std_msgs nlohmann_json)
 ament_export_include_directories(include)
 
 # Install the INTERFACE target with an export name

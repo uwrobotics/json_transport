@@ -29,18 +29,18 @@ OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <package format="3">
   <name>json_transport</name>
   <version>0.11.0</version>
-  <description>JSON transport for ROS 2</description>
+  <description>JSON transport for ROS 2 using std_msgs.msg.String</description>
 
   <maintainer email="pbovbel@locusrobotics.com">Paul Bovbel</maintainer>
   <license>BSD</license>
 
-  <!-- Build tool -->
+  <!-- Build tool dependency -->
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <!-- Build/exec dependencies -->
-  <depend>json_msgs</depend>
-  <depend>nlohmann_json</depend>
+  <!-- Build and execution dependencies -->
   <depend>rclcpp</depend>
+  <depend>std_msgs</depend>
+  <depend>nlohmann_json</depend>
 
   <!-- Test dependencies -->
   <test_depend>ament_lint_auto</test_depend>
