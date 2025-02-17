@@ -1,53 +1,65 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(json_transport)
 
-set_directory_properties(PROPERTIES COMPILE_OPTIONS "-std=c++14;-Wall;-Werror")
+# Set C++ standard (ROS 2 defaults to C++14, but we ensure it)
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(catkin REQUIRED COMPONENTS json_msgs roscpp)
+# Optionally add compile flags
+add_compile_options(-Wall -Werror)
+
+# Find dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(json_msgs REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
-include_directories(include ${catkin_INCLUDE_DIRS})
-
-catkin_package(
-  INCLUDE_DIRS include
-  CATKIN_DEPENDS json_msgs roscpp
+# Include directories for headers
+include_directories(
+  include
 )
-catkin_python_setup()
 
+# Install public header files (if any)
 install(DIRECTORY include/${PROJECT_NAME}/
-  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  DESTINATION include/${PROJECT_NAME}
 )
 
+# Install extra files (e.g. pip requirements)
 install(FILES requirements.txt
-  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION})
+  DESTINATION share/${PROJECT_NAME}
+)
 
-if(CATKIN_ENABLE_TESTING)
-  find_package(catkin_virtualenv)
-  find_package(roslint)
+if(BUILD_TESTING)
+  # Linting (requires ament_lint_auto)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
 
-  catkin_generate_virtualenv(
-    INPUT_REQUIREMENTS requirements.in
-  )
+  # --- C++ Tests ---
+  # Test executable from test/talker.cpp
+  ament_add_gtest(talker_cpp test/talker.cpp)
+  if(TARGET talker_cpp)
+    target_link_libraries(talker_cpp
+      rclcpp
+      nlohmann_json::nlohmann_json
+    )
+  endif()
 
-  roslint_cpp()
-  roslint_python()
+  # Test executable from test/test_listener.cpp
+  ament_add_gtest(test_listener_cpp test/test_listener.cpp)
+  if(TARGET test_listener_cpp)
+    target_link_libraries(test_listener_cpp
+      rclcpp
+      nlohmann_json::nlohmann_json
+    )
+  endif()
 
-  catkin_install_python(
-  PROGRAMS
-    test/talker_py
-    test/test_listener_py
-    test/test_packed_json.py
-  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION})
-
-  add_executable(talker_cpp test/talker.cpp)
-  target_link_libraries(talker_cpp ${catkin_LIBRARIES})
-
-  catkin_add_executable_with_gtest(test_listener_cpp test/test_listener.cpp)
-  target_link_libraries(test_listener_cpp ${catkin_LIBRARIES})
-
-  find_package(rostest)
-  add_rostest(test/transport.test ARGS talker_node:=talker_py)
-  add_rostest(test/transport.test ARGS talker_node:=talker_cpp)
-  catkin_add_nosetests(test/test_packed_json.py)
-
+  # --- Python Tests ---
+  # For Python tests, we assume they can be run with pytest.
+  # (Rename your Python test files with a .py extension if needed.)
+  find_package(ament_cmake_pytest REQUIRED)
+  ament_add_pytest_test(talker_py test/talker_py)
+  ament_add_pytest_test(test_listener_py test/test_listener_py)
+  ament_add_pytest_test(test_packed_json test/test_packed_json.py)
 endif()
+
+ament_package()

@@ -1,15 +1,21 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.5)
 project(json_msgs)
 
-find_package(catkin REQUIRED COMPONENTS message_generation)
+# Find ament and message generation dependencies
+find_package(ament_cmake REQUIRED)
+find_package(rosidl_default_generators REQUIRED)
 
-add_message_files(
-  DIRECTORY msg
-  FILES Json.msg
+# List the message files
+set(msg_files
+  "msg/Json.msg"
 )
 
-generate_messages()
-
-catkin_package(
-  CATKIN_DEPENDS message_runtime
+# Generate interfaces (messages, services, actions)
+rosidl_generate_interfaces(${PROJECT_NAME}
+  ${msg_files}
 )
+
+# Export the dependency on the runtime package for generated messages.
+ament_export_dependencies(rosidl_default_runtime)
+
+ament_package()
